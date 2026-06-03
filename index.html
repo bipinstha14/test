@@ -1,162 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Balance Mat | Advanced Postural Sway Metrics</title>
-    <style>
-        :root {
-            --primary: #0071e3;
-            --dark: #0f172a;
-            --light: #f8fafc;
-            --gray: #64748b;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: var(--dark); color: var(--light); overflow-x: hidden; padding-top: 80px; }
-        
-        /* Navigation Styles */
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 5%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1); height: 90px; }
-        .nav-links { display: flex; align-items: center; list-style: none; }
-        .nav-links a { color: var(--light); text-decoration: none; margin-left: 2rem; font-size: 0.9rem; transition: color 0.3s; }
-        .nav-links a:hover { color: var(--primary); }
-        
-        /* Dropdown Structure */
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-menu { 
-            display: none; 
-            position: absolute; 
-            background: #0f172a; 
-            min-width: 200px; 
-            box-shadow: 0px 10px 30px rgba(0,0,0,0.5); 
-            border-radius: 12px; 
-            border: 1px solid rgba(255,255,255,0.15); 
-            top: 100%; 
-            right: 0; 
-            padding: 0.5rem 0; 
-            z-index: 2000; 
-            margin-top: 0.5rem;
-        }
-        .dropdown:hover .dropdown-menu { display: block; }
-        .dropdown-menu a { display: block; padding: 0.7rem 1.2rem; margin: 0; font-size: 0.85rem; color: #cbd5e1; text-decoration: none; transition: background 0.2s, color 0.2s; cursor: pointer; text-align: left; }
-        .dropdown-menu a:hover { background: rgba(0, 113, 227, 0.15); color: #fff; }
+<meta charset="UTF-8">
+<title>Investor Global Dashboard</title>
 
-        /* Video Hero Area with Clean Light Background */
-        .hero { background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%); position: relative; height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 1rem; overflow: hidden; }
-        .hero-content { position: relative; z-index: 2; max-width: 800px; color: #0f172a; }
-        .badge { background: rgba(0, 113, 227, 0.1); border: 1px solid var(--primary); color: var(--primary); padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; text-transform: uppercase; font-weight: 600; }
-        .hero h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; color: #0f172a; }
-        .hero p { font-size: 1.25rem; color: #475569; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; }
-        .btn { background: var(--primary); color: white; padding: 0.8rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; transition: transform 0.2s, background 0.2s; border: none; cursor: pointer; }
-        .btn:hover { background: #0077ed; transform: translateY(-2px); }
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #070b14;
+    color: white;
+    display: flex;
+}
 
-        /* Interactive Section */
-        .interactive-section { padding: 5rem 5%; background: #ffffff; color: var(--dark); text-align: center; }
-        .section-title { font-size: 2.25rem; font-weight: 700; margin-bottom: 1rem; }
-        .section-subtitle { color: var(--gray); margin-bottom: 3rem; font-size: 1.1rem; }
-        
-        .tab-container { display: flex; justify-content: center; gap: 1rem; margin-bottom: 3rem; }
-        .tab-btn { background: #f1f5f9; border: none; padding: 0.75rem 1.5rem; font-weight: 600; border-radius: 8px; cursor: pointer; color: var(--gray); transition: all 0.3s; }
-        .tab-btn.active { background: var(--dark); color: #fff; }
-        
-        .display-box { max-width: 900px; margin: 0 auto; background: #f8fafc; border-radius: 16px; padding: 2.5rem; display: flex; align-items: center; gap: 3rem; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.05); min-height: 350px; }
-        .display-text { flex: 1; }
-        .display-text h3 { font-size: 1.75rem; margin-bottom: 1rem; color: var(--dark); }
-        .display-text p { color: var(--gray); line-height: 1.6; margin-bottom: 1.5rem; }
-        .display-text ul { list-style: none; }
-        .display-text ul li { margin-bottom: 0.5rem; position: relative; padding-left: 1.5rem; color: #334155; }
-        .display-text ul li::before { content: "✓"; position: absolute; left: 0; color: var(--primary); font-weight: bold; }
-        .display-graphic { flex: 1; background: #0f172a; height: 220px; border-radius: 12px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        
-        .wave-line { width: 80%; height: 2px; background: #22c55e; position: relative; animation: jitter 1.5s infinite linear; }
-        @keyframes jitter {
-            0% { transform: translateY(0) scaleY(1); }
-            25% { transform: translateY(-5px) scaleY(1.5); }
-            50% { transform: translateY(5px) scaleY(0.8); }
-            75% { transform: translateY(-3px) scaleY(1.2); }
-            100% { transform: translateY(0) scaleY(1); }
-        }
-        .graphic-label { position: absolute; top: 10px; left: 10px; color: #22c55e; font-family: monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+/* LEFT PANEL */
+.sidebar {
+    width: 320px;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-right: 1px solid rgba(255,255,255,0.08);
+}
 
-        .tech-section { padding: 5rem 5%; background: #f1f5f9; color: var(--dark); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; max-width: 1100px; margin: 0 auto; }
-        .card { background: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .card h4 { font-size: 1.25rem; margin-bottom: 0.75rem; color: var(--dark); }
-        .card p { color: var(--gray); line-height: 1.5; font-size: 0.95rem; }
+.title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
 
-        .footer { padding: 5rem 5%; background: var(--dark); text-align: center; border-top: 1px solid rgba(255,255,255,0.1); }
-        .footer p { color: var(--gray); font-size: 0.9rem; margin-top: 2rem; }
-        
-        /* Pure CSS Target Window Trigger Rules */
-        #vdrModal:target { display: flex !important; }
-    </style>
+/* KPI cards */
+.kpi {
+    background: rgba(255,255,255,0.05);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.kpi h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.kpi p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+/* MAP AREA */
+.map {
+    flex: 1;
+    position: relative;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg');
+    background-size: cover;
+    background-position: center;
+}
+
+/* DARK OVERLAY */
+.map::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(0,0,0,0.2), rgba(0,0,0,0.85));
+}
+
+/* PIN */
+.pin {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #00e5ff;
+    border-radius: 50%;
+    box-shadow: 0 0 12px #00e5ff;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+.pin::after {
+    content: attr(data-info);
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    padding: 5px 8px;
+    font-size: 11px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.pin:hover::after {
+    opacity: 1;
+}
+
+/* GLOW PULSE */
+.pin::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(0,229,255,0.3);
+    border-radius: 50%;
+    top: -5px;
+    left: -5px;
+    animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.5); opacity: 1; }
+    100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* TOP BAR */
+.topbar {
+    position: absolute;
+    top: 15px;
+    left: 350px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 5;
+}
+
+.card {
+    background: rgba(255,255,255,0.05);
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    font-size: 13px;
+}
+
+/* SPARKLINE */
+canvas {
+    margin-top: 10px;
+    width: 100%;
+    height: 60px;
+}
+</style>
 </head>
+
 <body>
 
-    <!-- Navigation Bar -->
-    <nav>
-        <a href="#" style="display: flex; align-items: center; text-decoration: none;">
-            <img src="logo.png" alt="Balance Mat Logo" style="height: 60px; max-height: 70px; width: auto; object-fit: contain;">
-        </a>
-        <div class="nav-links">
-            <a href="#solutions">Solutions</a>
-            <a href="#technology">Technology</a>
-            <a href="#global">Global</a>
-            <a href="#research">Research</a>
-            <a href="#technical">Technical</a>
-            
-            <div class="dropdown">
-                <a href="#" style="cursor: pointer;">Data Room ▾</a>
-                <div class="dropdown-menu">
-                    <!-- TARGET LINK: Instantly activates the window container without script delays -->
-                    <a href="#vdrModal" style="font-weight: 600; color: #fff;">🔒 Virtual Data Room</a>
-                </div>
-            </div>
-            <a href="#contact">Contact</a>
-        </div>
-    </nav>
+<div class="sidebar">
+    <div class="title">🌍 Investor Dashboard</div>
 
-    <!-- Visual Hero Area -->
-    <section class="hero">
-        <video autoplay muted loop playsinline style="position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; transform: translate(-50%, -50%); object-fit: cover; z-index: 1; opacity: 0.08;">
-            <source src="Promo video.mp4" type="video/mp4">
-        </video>
-        <div class="hero-content">
-            <div class="badge">TGA Approved • Australian Made</div>
-            <h1>Next-Generation Postural Sway Metrics</h1>
-            <p>Revolutionary fiber-optic technology measuring balance and falls risk with automated, objective data in under 20 seconds.</p>
-            <a href="#solutions" class="btn">Explore Dynamic Solutions</a>
-        </div>
-    </section>
+    <div class="kpi">
+        <h2>$48.6M</h2>
+        <p>Annual Revenue</p>
+    </div>
 
-    <!-- Interactive Solutions Box -->
-    <section id="solutions" class="interactive-section">
-        <h2 class="section-title">One Mat. Multi-Industry Precision.</h2>
-        <p class="section-subtitle">Click an industry below to see how our software adapts instantly to your clinical workflow.</p>
-        
-        <div class="tab-container">
-            <button class="tab-btn active" onclick="switchTab('aged')">Aged Care Facilities</button>
-            <button class="tab-btn" onclick="switchTab('sports')">Sports & Concussion</button>
-            <button class="tab-btn" onclick="switchTab('health')">Allied Health Practitioners</button>
-        </div>
+    <div class="kpi">
+        <h2>+27%</h2>
+        <p>YoY Growth</p>
+    </div>
 
-        <div class="display-box">
-            <div class="display-text" id="tab-content-text">
-                <h3>Automated Falls Risk Classification</h3>
-                <p>Protect vulnerable residents by replacing subjective observational screening with zero-bias optical sensors. Instantly identify physical frailty changes.</p>
-                <ul>
-                    <li>30-Second non-invasive testing</li>
-                    <li>Pre-emptive fall risk targeting</li>
-                    <li>Historical tracking data for care plans</li>
-                </ul>
-            </div>
-            <div class="display-graphic">
-                <div class="graphic-label" id="graph-label">Telemetry: Low Sway Amplitude (Normal)</div>
-                <div class="wave-line" id="wave"></div>
-            </div>
-        </div>
-    </section>
+    <div class="kpi">
+        <h2>18</h2>
+        <p>Active Countries</p>
+    </div>
 
-    <!-- Technical Superiority Matrix -->
-    <section id="technology" class="tech-section">
-        <div style="text-align:center; margin-bottom: 3rem;">
-            <h2 class="section-title">The Fiber-Optic Advantage</h2>
+    <div class="kpi">
+        <h2>1.2M</h2>
+        <p>Global Users</p>
+
+        <canvas id="chart"></canvas>
+    </div>
+</div>
+
+<div class="map">
+
+    <div class="topbar">
+        <div class="card">📈 Market Status: Strong Growth</div>
+        <div class="card">🕒 Live Sync: Active</div>
+    </div>
+
+    <!-- Pins -->
+    <div class="pin" style="top:40%; left:25%;" data-info="USA - $18M Revenue"></div>
+    <div class="pin" style="top:45%; left:50%;" data-info="Europe - $12M Revenue"></div>
+    <div class="pin" style="top:55%; left:78%;" data-info="Australia - $8M Revenue"></div>
+    <div class="pin" style="top:60%; left:60%;" data-info="Middle East - $10M Revenue"></div>
+
+</div>
+
+<script>
+// Simple sparkline chart (no libraries)
+const canvas = document.getElementById("chart");
+const ctx = canvas.getContext("2d");
+
+canvas.width = 260;
+canvas.height = 80;
+
+const data = [10, 20, 15, 30, 28, 40, 55, 50, 65, 70];
+
+ctx.beginPath();
+ctx.moveTo(0, 80 - data[0]);
+
+data.forEach((v, i) => {
+    ctx.lineTo(i * 30, 80 - v);
+});
+
+ctx.strokeStyle = "#00e5ff";
+ctx.lineWidth = 2;
+ctx.stroke();
+</script>
+
+</body>
+</html>
